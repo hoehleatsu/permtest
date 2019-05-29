@@ -1,0 +1,67 @@
+.TH PERMTEST 1 "6 January 1995"
+.SH NAME
+permtest \- Permutationstest zum Vergleich von zwei Stichproben
+.SH SYNOPSIS
+.BI "permtest [-p" x "gnrisfqo{nptf}]"
+filename...
+.SH DESCRIPTION
+.B
+permtest
+fuehrt einen einseitigen Permutationstest zu Vergleich
+zweier unabhaengiger Stichproben durch. Die verwendeten Dateien muessen folgendes Format aufweisen: Sie bestehen aus zwei durch einen Zeilenumbruch voneinander
+getrennten Zeilen, von denen die erste die Daten der ersten Stichprobe und
+die zweite die der zweiten Stichprobe enthaelt. Die einzelnen Werte werden durch Tabulatoren voneinander getrennt.
+.SH OPTIONS
+.PP
+.TP 
+.BI -p x
+Die Daten werden auf 
+.I "x"
+signifikante (Dezimal-)Stellen Genauigkeit gerundet.
+.PP
+.TP 
+.B "-g"
+Es wird der Green-Algorithmus statt des Tritchler Algorithmus verwendet. 
+Dies ist nur bei sehr kleinen Stichprobenumfaengen sinnvoll.
+.PP
+.TP
+.B "-r"
+Rangtest durchfuehren.
+.PP
+.TP
+.B "-i"
+Standardmaessig wird der p-Wert dafuer berechnet, dass die erste Stichprobe
+kleiner ist als die zweite. Wird diese Option angegeben, so wird der p-Wert dafuer, dass die erte Stichprobe groesser ist als die zweite berechnet.
+.PP
+.TP
+.B "-f"
+Es wird so gerundet, dass der berechnete p-Wert ueber dem wahren p-Wert liegt.
+.PP
+.TP
+.B "-s"
+Dies ist das genaue Gegenteil von
+.B "-f"
+und dient nur zu Testzwecken.
+.PP
+.TP
+.B "-q"
+Ausgabe unterdruecken: es werden keine ausser den mit
+.B
+o
+festgelegten Informationen ausgegeben.
+.PP
+.TP
+.B "-o{[nptf]}"
+Diese Option steuert das Ausgabeformat.
+.B
+n
+steht fuer den Stichprobenumfang,
+.B
+p
+fuer den p-Wert,
+.B
+t
+fuer die Dauer der Berechnungen und
+.B
+f
+fuer den Dateinamen.

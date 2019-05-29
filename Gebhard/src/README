@@ -1,0 +1,16 @@
+The files in this directory correspond to the code
+of Jens Gebhard mentioned in the paper
+
+Gebhard, J. & Schmitz, N. Permutation tests- a revival?! II. An
+efficient algorithm for computing the critical region, Statistical
+Papers (1998) 39: 87.  https://doi.org/10.1007/BF02925374
+
+and the link to http://WWWmath.uni-muenster.de/math/inst/statistik
+containing the C++ program as mentioned in the paper. Since this URL
+is now defunctional we found the code under the link
+
+https://web.archive.org/web/19970714042532/http://wwwmath.uni-muenster.de/math/inst/statistik/rd/Permutationstest/
+
+Unfortunately, the code is not available under any modern license, but
+is just stated as Copyright Gebhard, J. (1993-1995).  The download was
+done by M. Höhle (http://www.math.su.se/~hoehle) on 2019-05-28.

@@ -1,0 +1,13 @@
+./Output/main.o: main.cc Permutationstest.h global.h pitman.h timer.h tritchler.h \
+  green.h
+./Output/Pitman.o: Pitman.cc pitman.h timer.h global.h
+./Output/Pitman.TransformData.o: Pitman.TransformData.cc pitman.h timer.h global.h
+./Output/Tritchler.o: Tritchler.cc tritchler.h pitman.h timer.h global.h
+./Output/FFT.o: FFT.cc tritchler.h pitman.h timer.h global.h
+./Output/Green.o: Green.cc green.h pitman.h timer.h global.h
+./Output/Timer.o: Timer.cc timer.h
+./Output/Pitman.DataInput.o: Pitman.DataInput.cc pitman.h timer.h global.h
+./Output/Pitman.OptionHandler.o: Pitman.OptionHandler.cc pitman.h timer.h global.h
+./Output/Pitman.CalcValues.o: Pitman.CalcValues.cc pitman.h timer.h global.h
+./Output/Permutationstest.o: Permutationstest.cc Permutationstest.h global.h \
+  pitman.h timer.h tritchler.h green.h
