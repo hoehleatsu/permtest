@@ -41,7 +41,7 @@ mean(dist>=sum(y1))
 ##Small helper function to write data to file in a format
 ##desired by the permtest program by Gebhard & Schmidt (1998)
 write2file <- function(y1, y2, file_name="foo.txt") {
-  f <- file(file.path("data",file_name))
+  f <- file(file.path("Data",file_name))
   writeLines(paste0(paste0(y1, collapse="\t"),"\n",paste0(y2, collapse="\t")),f)
   close(f)
 }
@@ -49,14 +49,18 @@ write2file <- function(y1, y2, file_name="foo.txt") {
 ##Write to file
 write2file(y1, y2, file_name="foo.txt")
 ##Run the Software by Gebhard using the Green approximation
-system("./Gebhard/bin/permtest -ig data/foo.txt")
+res <- system2("./Gebhard/bin/permtest", args="-ig Data/foo.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
 
 ## Trichtler approximation
-system("./Gebhard/bin/permtest -i data/foo.txt")
+res <- system2("./Gebhard/bin/permtest", args="-i Data/foo.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
 
 ##Same for the rank test. This should be the same value
 ##as the Mann-Whitney U test
-system("./Gebhard/bin/permtest -ir data/foo.txt")
+res <- system2("./Gebhard/bin/permtest", args="-ir Data/foo.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
+
 
 ######################################################################
 ## Same, but now for a larger sample
@@ -79,14 +83,18 @@ write2file(y1=y1, y2=y2, file_name="foo-large.txt")
 ## viele Daten). One could look into the code and increase the
 ## threshold as it should work IMHO, but then one has to change the
 ## labelling index from unsigned int)
-system("./Gebhard/bin/permtest -ig data/foo-large.txt")
+res <- system2("./Gebhard/bin/permtest", args="-ig Data/foo-large.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
 choose(sum(N),N[1])
 choose(sum(N),N[1]) > 4294967295
 
 ##Run the Software by Gebhard, use Trichtler approach
-system("./Gebhard/bin/permtest -i data/foo-large.txt")
+res <- system2("./Gebhard/bin/permtest", args="-i Data/foo-large.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
+
 ##Just run the Mann-Whitney U test
-system("./Gebhard/bin/permtest -ir data/foo-large.txt")
+res <- system2("./Gebhard/bin/permtest", args="-ir Data/foo-large.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
 
 ##Compare with the asymptotic value
 wilcox.test(y1, y2 , paired=FALSE, correct=FALSE, exact=FALSE, alternative="greater")$p.value
@@ -103,7 +111,9 @@ write2file(y1, y2, "foo-lk.txt")
 
 ##Run with the Green approach
 ##Run the software with the Trichtler approximation
-system("./Gebhard/bin/permtest -ig data/foo-lk.txt")
+res <- system2("./Gebhard/bin/permtest", args="-ig Data/foo-lk.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
 
 ##Run the software with the Trichtler approximation
-system("./Gebhard/bin/permtest -i data/foo-lk.txt")
+res <- system2("./Gebhard/bin/permtest", args="-i Data/foo-lk.txt", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
