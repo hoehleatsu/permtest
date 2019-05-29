@@ -123,7 +123,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">perm.R</h1>
 <h4 class="author"><em>hoehle</em></h4>
-<h4 class="date"><em>Wed May 29 11:11:36 2019</em></h4>
+<h4 class="date"><em>Wed May 29 11:34:45 2019</em></h4>
 
 </div>
 
@@ -151,12 +151,11 @@ y2 &lt;- rbeta(N[2],2,2)
 y &lt;- c(y1,y2)
 
 ##Mean in each group
-mean(y1)</code></pre>
-<pre><code>## [1] 0.5522191</code></pre>
-<pre class="r"><code>mean(y2)</code></pre>
-<pre><code>## [1] 0.4990703</code></pre>
+c(mu_group1=mean(y1), mu_group2=mean(y2))</code></pre>
+<pre><code>## mu_group1 mu_group2 
+## 0.5522191 0.4990703</code></pre>
 <pre class="r"><code>######################################################################
-## Compute some appropriate tests
+## Compute some appropriate tests for the comparison of the two groups
 ######################################################################
 ##Simple t-test
 t.test(y1,y2, alternative=&quot;greater&quot;)</code></pre>
@@ -254,6 +253,8 @@ cat(paste0(res, collapse=&quot;\n&quot;))</code></pre>
 ## N1+N2    p-Wert  Dauer [s]   
 ## 18   0.414279    0.000   
 ## -----------------------------------------------------</code></pre>
+<pre class="r"><code>wilcox.test(y1, y2 , paired=FALSE, correct=FALSE, exact=TRUE, alternative=&quot;greater&quot;)$p.value</code></pre>
+<pre><code>## [1] 0.4142785</code></pre>
 <pre class="r"><code>######################################################################
 ## Same, but now for a larger sample
 ######################################################################
@@ -312,7 +313,7 @@ cat(paste0(res, collapse=&quot;\n&quot;))</code></pre>
 ## .................................................
 ## 
 ## N1+N2    p-Wert  Dauer [s]   
-## 53   0.902892    0.035   
+## 53   0.902892    0.036   
 ## -----------------------------------------------------</code></pre>
 <pre class="r"><code>##Just run the Mann-Whitney U test
 res &lt;- system2(&quot;./Gebhard/bin/permtest&quot;, args=&quot;-ir Data/foo-large.txt&quot;, stdout=TRUE, stderr=TRUE)
@@ -336,7 +337,14 @@ cat(paste0(res, collapse=&quot;\n&quot;))</code></pre>
 <pre class="r"><code>##Compare with the asymptotic value
 wilcox.test(y1, y2 , paired=FALSE, correct=FALSE, exact=FALSE, alternative=&quot;greater&quot;)$p.value</code></pre>
 <pre><code>## [1] 0.9203717</code></pre>
-<pre class="r"><code>######################################################################
+<pre class="r"><code>##For export to Python:
+##cat(paste0(&quot;a = np.array([&quot;,paste0(y1, collapse=&quot;, &quot;), &quot;])&quot;))
+##cat(paste0(&quot;b = np.array([&quot;,paste0(y2, collapse=&quot;, &quot;), &quot;])&quot;))
+##Note: we get the following result using Lucas Kjälls program:
+##p-value exact permutation test: 0.1979129829489084 (0.1979129829489084, 89450351099305.0, 903936161908052.0)
+##Not clear if its a one or two-sided test, though.
+
+######################################################################
 ##Values from Lucas Kjäll's python notebook
 ######################################################################
 y1 &lt;- c(2.5,  3.7, 4.2)

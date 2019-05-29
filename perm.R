@@ -21,11 +21,10 @@ y2 <- rbeta(N[2],2,2)
 y <- c(y1,y2)
 
 ##Mean in each group
-mean(y1)
-mean(y2)
+c(mu_group1=mean(y1), mu_group2=mean(y2))
 
 ######################################################################
-## Compute some appropriate tests
+## Compute some appropriate tests for the comparison of the two groups
 ######################################################################
 ##Simple t-test
 t.test(y1,y2, alternative="greater")
@@ -61,6 +60,7 @@ cat(paste0(res, collapse="\n"))
 res <- system2("./Gebhard/bin/permtest", args="-ir Data/foo.txt", stdout=TRUE, stderr=TRUE)
 cat(paste0(res, collapse="\n"))
 
+wilcox.test(y1, y2 , paired=FALSE, correct=FALSE, exact=TRUE, alternative="greater")$p.value
 
 ######################################################################
 ## Same, but now for a larger sample
@@ -99,6 +99,13 @@ cat(paste0(res, collapse="\n"))
 ##Compare with the asymptotic value
 wilcox.test(y1, y2 , paired=FALSE, correct=FALSE, exact=FALSE, alternative="greater")$p.value
 
+##For export to Python:
+##cat(paste0("a = np.array([",paste0(y1, collapse=", "), "])"))
+##cat(paste0("b = np.array([",paste0(y2, collapse=", "), "])"))
+##Note: we get the following result using Lucas Kjälls program:
+##p-value exact permutation test: 0.1979129829489084 (0.1979129829489084, 89450351099305.0, 903936161908052.0)
+##Not clear if its a one or two-sided test, though.
+
 ######################################################################
 ##Values from Lucas Kjäll's python notebook
 ######################################################################
@@ -117,3 +124,4 @@ cat(paste0(res, collapse="\n"))
 ##Run the software with the Trichtler approximation
 res <- system2("./Gebhard/bin/permtest", args="-i Data/foo-lk.txt", stdout=TRUE, stderr=TRUE)
 cat(paste0(res, collapse="\n"))
+
