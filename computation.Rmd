@@ -1,0 +1,114 @@
+---
+title: "Finding the number of permuations"
+author: "Michael Höhle, Stockholm University"
+date: "2019-06-01"
+output:
+  pdf_document: default
+  html_document: default
+header-includes: \usepackage{bm}
+bibliography: bibliography.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Abstract
+
+We write up a difference equations to compute the distribution under the null hypothesis for an exact permutation test for the means in two independent groups.
+
+## The number of permutations
+
+Let $\bm{x}_1=(x_1,\ldots, x_m)$ and $\bm{y}=(y_1,\ldots,y_n)$ be two samples consisting of integer values, i.e. $x_i \in \mathbb{N}_0$ for $1\leq i \leq m$ and $y_j \in \mathbb{N}_0$ for $1\leq j\leq m$. We compute $s_{\text{obs}} = \sum_{i=1}^m x_i$ as the observed sum in the first sample and want to know how extreme this value is under the null hypothesis that the mean does not differ in the distributions against the alternative that the mean in the second group is larger than in the first group. This is equivalent to investigating how likely it is to observe $s$ or a more extreme value in the direction of the alternative, i.e. $P(S \leq s_{\text{obs}} | \bm{x}, \bm{y})$. 
+
+The computational approach is as follows: Let $\bm{z}=(z_1, z_2, \ldots, z_{n+m})$ be the ordered vector of the $n+m$ values from the two samples, i.e. the vector is such such that $z_1=\min(\bm{x},\bm{y})$ is the smallest value in the two samples and $z_{n+m}=\max(\bm{x},\bm{y})$ is the largest value and for all $i<j$ we have $z_i \leq z_j$ for $i<j$. WLOG we shall assume that $z_1=0$.
+
+Let the possible state of the integer sum be $\Omega=\{0,1,\ldots,\mathcal{S}\}$, which we shall denote the support of the sum. We know that the maximal value the sum can obtain when using the values from $\bm{z}$ is $\mathcal{S}=z_{n+1}+\ldots+ z_{m+n}$, i.e. the sum of the $m$ largest values. Assume we let the random variable $\bm{Q}=(Q_1,\ldots,Q_m)$ denote a randomly picked permutation where we pick $m$ values from $\bm{z}$ and let $S_Q=\sum_{i=1}^m Q_i$ be the corresponding sum. We compute the PMF of $S_Q$, which has support on $\Omega$ as follows:
+
+
+\begin{align*}
+P(S_Q = i) &= \frac{\text{\# permutations with sum equal to s}}{\text{\# permutations selecting $m$ out of the $m+n$ values in $\bm{z}$}}, \quad 0\leq i \leq \mathcal{S}
+\end{align*}
+
+
+Let $N(j,k)$ denote the vector of length $\mathcal{S}+1$, which for $0\leq s\leq \mathcal{S}$ states how many of the possible $\frac{(m+n-j)!}{j!}$ permutations yield a sum of $s$. Note that this can be computed using the following difference equation, which is inspired by the computation of Theorem 1 in @pagano_trichtler1983 [^1]:
+
+\begin{align*}
+N(j,k) = j \cdot \left( N(j-1,k-1) \oplus z_k\right) + N(j,k-1),
+\end{align*}
+
+where the $\oplus$ operator for the integer $0 \leq i \leq z_{n+m}$ is defined as follows:
+\begin{align*}
+(s_0,\ldots,s_{w},0,\ldots,0)  \oplus i := (\underbrace{0,\ldots,0}_{i zeros},s_0,s_1,\ldots,s_{w},0,\ldots,0)
+\end{align*}
+In other words, the $\oplus$ operator shifts the elements of its left argument by $i$ positions forward. Note: The input argument is always such that there are enough zeros at the end such that this shift just reduces the number of zeroes at the end, but does not lead to any non-zero entries being shifted outside the vector. Example:
+\begin{align*}
+(2,1,1,0,0,0,0,0,0,0,0)' \oplus 3 := (0,0,0,2,1,1,0,0,0,0,0)'
+\end{align*}
+
+## In code
+
+```{r}
+x <- c(0,3,0) # first sample
+y <- c(1,2,5) # second sample
+m <- length(x) #length of the 1st sample (x)
+n <- length(y) #length of the 2nd sample (y)
+z <- sort(c(x,y)) #vector of the combined first and second sample (ordered!)
+S <- sum(tail(z,n=m)) #largest possible value of the sum in the permutations of z
+
+##Vector and matrix containing just zeroes
+zero_vec <- rep(0, S+1)
+zero_matrix <- matrix(NA, S+1, m+n,dimnames=list(0:S,1:(m+n)))
+
+##helper function
+shift <- function(v, i) c(rep(0,i),v[1:(length(v)-i)])
+
+##Compute N(i,j) by loops
+for (j in 1:m) {
+  N <- zero_matrix
+  for (k in 1:(m+n)) {
+    if (j == 1) {
+      ##Base setup - we count what we observed in the first k positions of z
+      N[,k] <- table(factor(z[1:k], levels=0:S))
+    } else {
+      if (j>k) {
+        ##Nothing to do in this case
+        N[,k] <- zero_vec
+      } else {
+        ##Compute using the difference equation
+        N[,k] <- j*shift(Njm1[,k-1],z[k]) + N[,k-1]
+      }
+    }
+  }
+  
+  Njm1 <- N
+  cat("\n\nj=",j, "   k=",k,"\n")
+  print(N)
+}
+
+##Show result, this is N(3,6)
+print(N)
+
+##Sanity checks
+sum(N[,m+n])
+factorial(m+n)/factorial(m)
+pmf <- N[,m+n] / sum(N[,m+n])
+##More extreme observations, i.e. this is the p-value
+(p_value <- sum(pmf[(sum(x)+1):(S+1)]))
+```
+
+We compare the result with performing all permutations manually:
+
+```{r MANUALPERMS}
+##Compute all permutations manually
+perms <- combinat::combn(m+n, m=m)
+dist <- apply(perms, 2, function(i) sum(z[i]))
+(p_value_exact <- mean(dist>=sum(x)))
+
+##
+stopifnot(isTRUE(all.equal(p_value, p_value_exact)))
+```
+
+[^1]: ... but without the fast Fourier transform to compute the sums
+
+# Literature

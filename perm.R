@@ -125,3 +125,39 @@ cat(paste0(res, collapse="\n"))
 res <- system2("./Gebhard/bin/permtest", args="-i Data/foo-lk.txt", stdout=TRUE, stderr=TRUE)
 cat(paste0(res, collapse="\n"))
 
+###########################################
+# Simplest example for manual computation
+###########################################
+
+# set.seed(123)
+# y1 <- rpois(10,5) #c(1,2)
+# y2 <- rpois(8,5)# c(0,3)
+# cat(paste0("a = np.array([",paste0(y1, collapse=", "), "])"))
+# cat(paste0("b = np.array([",paste0(y2, collapse=", "), "])"))
+# ##
+# y1 <- y1[1:3]
+# y2 <- y2[1:2]
+
+##Some very simple data
+y1 <- c(0,3,0)
+y2 <- c(1,2,5)
+y <- c(y1,y2)
+N <- c(length(y1), length(y2))
+y <- y-min(y)
+y1 <- y[1:N[1]]
+y2 <- y[(N[1]+1):sum(N)]
+y1
+y2
+cat(paste0("a = np.array([",paste0(y1, collapse=", "), "])"))
+cat(paste0("b = np.array([",paste0(y2, collapse=", "), "])"))
+
+choose(sum(N),N[1])
+##Compute all permutations manually
+perms <- combinat::combn(sum(N), m=N[1])
+perms
+dist <- apply(perms, 2, function(i) sum(y[i]))
+mean(dist>=sum(y1))
+  
+##Compare with python program
+res <- system2("/Users/hoehle/anaconda3/bin/python3.6", args="Python/perm.py", stdout=TRUE, stderr=TRUE)
+cat(paste0(res, collapse="\n"))
