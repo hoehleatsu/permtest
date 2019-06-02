@@ -19,22 +19,27 @@ We write up a difference equations to compute the distribution under the null hy
 
 ## The number of permutations
 
-Let $\bm{x}_1=(x_1,\ldots, x_m)$ and $\bm{y}=(y_1,\ldots,y_n)$ be two samples consisting of integer values, i.e. $x_i \in \mathbb{N}_0$ for $1\leq i \leq m$ and $y_j \in \mathbb{N}_0$ for $1\leq j\leq m$. We compute $s_{\text{obs}} = \sum_{i=1}^m x_i$ as the observed sum in the first sample and want to know how extreme this value is under the null hypothesis that the mean does not differ in the distributions against the alternative that the mean in the second group is larger than in the first group. This is equivalent to investigating how likely it is to observe $s$ or a more extreme value in the direction of the alternative, i.e. $P(S \leq s_{\text{obs}} | \bm{x}, \bm{y})$. 
+Let $\bm{x}_1=(x_1,\ldots, x_m)$ and $\bm{y}=(y_1,\ldots,y_n)$ be two samples consisting of integer values, i.e. $x_i \in \mathbb{N}_0$ for $1\leq i \leq m$ and $y_j \in \mathbb{N}_0$ for $1\leq j\leq m$. We compute $s_{\text{obs}} = \sum_{i=1}^m x_i$ as the observed sum in the first sample and want to know how extreme this value is under the null hypothesis that the mean does not differ between the two distributions against the alternative that the mean in the second group is larger than in the first group (aka. Fisher-Pitman test?). This is equivalent to investigating how likely it is to observe $s_{\text{obs}}$ or a more extreme value in the direction of the alternative, i.e. $P(S \leq s_{\text{obs}} | \bm{x}, \bm{y})$, where $S$ is a random variable denoting the value of the sum in the first sample under the permutation distribution. 
 
-The computational approach is as follows: Let $\bm{z}=(z_1, z_2, \ldots, z_{n+m})$ be the ordered vector of the $n+m$ values from the two samples, i.e. the vector is such such that $z_1=\min(\bm{x},\bm{y})$ is the smallest value in the two samples and $z_{n+m}=\max(\bm{x},\bm{y})$ is the largest value and for all $i<j$ we have $z_i \leq z_j$ for $i<j$. WLOG we shall assume that $z_1=0$.
+The computational approach is as follows: Let $\bm{z}=(z_1, z_2, \ldots, z_{n+m})$ be the ordered vector of the $n+m$ values from the two samples, i.e. the vector is such such that $z_1=\min(\bm{x},\bm{y})$ is the smallest value in the two samples and $z_{n+m}=\max(\bm{x},\bm{y})$ is the largest value and for all $1\leq i<j \leq n+m$ we have $z_i \leq z_j$ for $i<j$. WLOG we can assume that $z_1=0$.
 
-Let the possible state of the integer sum be $\Omega=\{0,1,\ldots,\mathcal{S}\}$, which we shall denote the support of the sum. We know that the maximal value the sum can obtain when using the values from $\bm{z}$ is $\mathcal{S}=z_{n+1}+\ldots+ z_{m+n}$, i.e. the sum of the $m$ largest values. Assume we let the random variable $\bm{Q}=(Q_1,\ldots,Q_m)$ denote a randomly picked permutation where we pick $m$ values from $\bm{z}$ and let $S_Q=\sum_{i=1}^m Q_i$ be the corresponding sum. We compute the PMF of $S_Q$, which has support on $\Omega$ as follows:
+Let the possible states of the integer sum be $\Omega=\{0,1,\ldots,\mathcal{S}\}$, which we shall denote the support of the sum. We know that the maximal value the sum can obtain when using the values from $\bm{z}$ is $\mathcal{S}=z_{n+1}+\ldots+ z_{m+n}$, i.e. the sum of the $m$ largest values. Assume we let the random variable $\bm{Q}=(Q_1,\ldots,Q_m)$ denote a randomly picked permutation where we pick $m$ values from $\bm{z}$ and let $S=\sum_{i=1}^m Q_i$ be the corresponding sum. We compute the PMF of $S$, which has support on $\Omega$ as follows:
 
 
 \begin{align*}
-P(S_Q = i) &= \frac{\text{\# permutations with sum equal to s}}{\text{\# permutations selecting $m$ out of the $m+n$ values in $\bm{z}$}}, \quad 0\leq i \leq \mathcal{S}
+P(S = s) &= \frac{\text{\# permutations selecting $m$ out of the $m+n$ values in $\bm{z}$ s.t. sum is equal to $s$}}{\text{\# permutations selecting $m$ out of the $m+n$ values in $\bm{z}$}}, 
+\end{align*}
+where $0\leq s \leq \mathcal{S}$. From basic combinatorics we know that the denominator of the above is equal to 
+
+\begin{align*}
+{}_{m} C_{m+n} = \frac{(m+n)!}{m!}.
 \end{align*}
 
 
-Let $N(j,k)$ denote the vector of length $\mathcal{S}+1$, which for $0\leq s\leq \mathcal{S}$ states how many of the possible $\frac{(m+n-j)!}{j!}$ permutations yield a sum of $s$. Note that this can be computed using the following difference equation, which is inspired by the computation of Theorem 1 in @pagano_trichtler1983 [^1]:
+To find the numerator, let $\bm{N}(j,k)$ denote the vector of length $\mathcal{S}+1$, which for $0\leq s\leq \mathcal{S}$ states how many combinations are possible when selecting $j$, $1\leq j \leq k$, elements out of $z_1,\ldots,z_k$ such that the sum of the elements is $s$. Note that this can be computed using the following difference equation, which is inspired by the computation of Theorem 1 in @pagano_trichtler1983 [^1] and made explicit in @zimmermann1985[^2] :
 
 \begin{align*}
-N(j,k) = j \cdot \left( N(j-1,k-1) \oplus z_k\right) + N(j,k-1),
+\bm{N}(j,k) = j \cdot \left( \bm{N}(j-1,k-1) \oplus z_k\right) + \bm{N}(j,k-1),
 \end{align*}
 
 where the $\oplus$ operator for the integer $0 \leq i \leq z_{n+m}$ is defined as follows:
@@ -45,6 +50,8 @@ In other words, the $\oplus$ operator shifts the elements of its left argument b
 \begin{align*}
 (2,1,1,0,0,0,0,0,0,0,0)' \oplus 3 := (0,0,0,2,1,1,0,0,0,0,0)'
 \end{align*}
+
+The desired value of the numerator is then found as $N(m, m+n)$. For a direct recursive equation without the shift operator see @zimmermann1985.
 
 ## In code
 
@@ -76,7 +83,10 @@ for (j in 1:m) {
         N[,k] <- zero_vec
       } else {
         ##Compute using the difference equation
+        ##When order matters
         N[,k] <- j*shift(Njm1[,k-1],z[k]) + N[,k-1]
+        ##When order does not matter as in Zimmermann (1985)
+        N[,k] <- shift(Njm1[,k-1],z[k]) + N[,k-1]
       }
     }
   }
@@ -91,7 +101,11 @@ print(N)
 
 ##Sanity checks
 sum(N[,m+n])
+##Number of permutations when order matters
 factorial(m+n)/factorial(m)
+##Number of permutations when order does not matter
+choose(m+n, m)
+##Resulting PMF
 pmf <- N[,m+n] / sum(N[,m+n])
 ##More extreme observations, i.e. this is the p-value
 (p_value <- sum(pmf[(sum(x)+1):(S+1)]))
@@ -110,5 +124,6 @@ stopifnot(isTRUE(all.equal(p_value, p_value_exact)))
 ```
 
 [^1]: ... but without the fast Fourier transform to compute the sums
+[^2]: In the @zimmermann1985 paper the equation is given for combinations where order does not matter. In the present note we count the number of combinations where order matters.  The resulting p-values are the same, though.
 
 # Literature
